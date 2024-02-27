@@ -32,5 +32,6 @@ public class Main {
         while (running) {
             running = Singleton.getProductController().display(input, productsList, transactionFile, dataSource, dir);
         }
+        System.out.println("Hello from main");
     }
 }
