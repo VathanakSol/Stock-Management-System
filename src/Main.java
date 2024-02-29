@@ -6,6 +6,7 @@ import validation.Validation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import view.ProductView.*;
 
 public class Main {
     public static void main(String[] args) {
@@ -153,11 +154,11 @@ public class Main {
                     break;
                 }
 
-                    default: {
-                        System.out.println("Invalid option. Please select a valid option.");
-                        
-                    }break;
-                }
+                default: {
+                    System.out.println("Invalid option. Please select a valid option.");
+
+                }break;
+            }
 
         }while (!opt.equals("x"));
         System.out.println("Bye bye");
