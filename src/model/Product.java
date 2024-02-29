@@ -3,11 +3,8 @@ package model;
 import java.time.LocalDate;
 
 public class Product {
-<<<<<<< HEAD
     private String codeOfProduct;
-=======
     private int id;
->>>>>>> 2645b29c2157674d81a1bf3f7321ed0b63fb5d84
     private String name;
     private int qty;
     private float price;

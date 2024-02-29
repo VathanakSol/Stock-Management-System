@@ -1,16 +1,16 @@
 import RenderTable.TableRender;
 import controller.ProductController;
-<<<<<<< HEAD
+
 import service.ProductServiceImp;
 import validation.Validation;
 
-=======
+
 import model.Product;
 import utils.Singleton;
 import utils.Utils;
 
 import java.io.File;
->>>>>>> 2645b29c2157674d81a1bf3f7321ed0b63fb5d84
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -18,7 +18,7 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
         Scanner input = new Scanner(System.in);
-<<<<<<< HEAD
+
         ProductController controller = new ProductController();
         Validation validation = new Validation();
 
