@@ -13,6 +13,8 @@ import view.ProductView;
 
 import java.util.List;
 
+import static java.lang.System.exit;
+
 public class ProductController {
     Product product = new Product();
     Validation validation = new Validation();
@@ -75,20 +77,20 @@ public class ProductController {
             int totalRecords = stockList.size();
             int maxPage1 = (totalRecords + pageSize - 1) / pageSize;
             System.out.println(" Page : " +page + " of " +maxPage1+"                                                                                        Total record : "+ totalRecords);
-            System.out.println(" >>>Page Navigation :                                                 (1)First  (2)Previous  (3)Next  (4)Last  (5)GoTo");
-            System.out.print(" -> Press any key(Integer) to exit : ");
-            int opt = validation.inputIntValidation();
+            System.out.println(" >>>Page Navigation :                                            (f)First  (p)Previous  (n)Next  (l)Last  (g)GoTo   (b)Back");
+            System.out.print(" -> Please input your choice : ");
+            String opt = validation.inputStringValidation();
             switch (opt){
-                case 1:
+                case "f":
                     page = 1;
                     break;
-                case 2:
+                case "p":
                     if (page > 1) {
                         page--;
                     }
                     break;
 
-                case 3:
+                case "n":
                     int nextPage = page + 1;
                     int maxPage = (stockList.size() + pageSize - 1) / pageSize; // Calculate the maximum page
                     if (nextPage <= maxPage) {
@@ -97,11 +99,11 @@ public class ProductController {
                         System.out.println("No more pages available.");
                     }
                     break;
-                case 4:
+                case "l":
                     // Set the page to the last page
                     page = (stockList.size() + pageSize - 1) / pageSize;
                     break;
-                case 5:
+                case "g":
                     System.out.print("Enter the page number: ");
                     int pageNumber = validation.inputIntValidation();
                     if (pageNumber >= 1) {
@@ -110,12 +112,15 @@ public class ProductController {
                         System.out.println("Invalid page number. Please enter a positive number.");
                     }
                     break;
-                default:
+                case "b":
                     System.out.println("Back to the main menu...");
+                    return;
+                default:
+                    System.out.print("Input must be a valid string. Try again!! \n");
             }
-            if (opt > 5 || opt < 1){
-                break;
-            }
+//            if (opt > 5 || opt < 1) {
+//                break;
+//            }
         }
 
     }

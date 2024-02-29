@@ -18,5 +18,21 @@ public class Validation {
         return value;
     }
 
+    public String inputStringValidation() {
+        Scanner input = new Scanner(System.in);
+        String opt;
+
+        while (true) {
+            try {
+                opt = input.nextLine();
+                break;
+
+            } catch (Exception exception) {
+                System.out.print("Input must be a valid string. Try again: ");
+                input.nextLine(); // Consume the invalid input
+            }
+        }
+        return opt;
+    }
 
 }
