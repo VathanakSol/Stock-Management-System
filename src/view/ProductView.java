@@ -17,8 +17,11 @@ public class ProductView {
         System.out.println("8. Random");
         System.out.println("9. Delete all data");
         System.out.println("10. Exit");
+        System.out.println("-+".repeat(50));
         System.out.print("Please choose the option: ");
         choice = input.nextInt();
+        System.out.println("-+".repeat(50));
+
         return choice;
     }
 }
