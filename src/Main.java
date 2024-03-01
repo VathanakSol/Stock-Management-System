@@ -8,10 +8,18 @@ import java.io.File;
 
 import RenderTable.TableRender;
 import controller.ProductController;
+<<<<<<< HEAD
 import service.ProductServiceImp;
 import validation.Validation;
 
 
+=======
+import model.Product;
+import utils.Singleton;
+import utils.Utils;
+
+import java.io.File;
+>>>>>>> 358575109c7aa64dfc83c74b187dc99c64e86bb6
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -20,6 +28,9 @@ public class Main {
     public static void main(String[] args) {
         Scanner input = new Scanner(System.in);
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 358575109c7aa64dfc83c74b187dc99c64e86bb6
 
         // variable for storing location of file transaction
         String transactionFile = "src/data/transaction.dat";
@@ -28,6 +39,7 @@ public class Main {
         // variable for storing location of dir back up
         String dir = "src/backup";
 
+<<<<<<< HEAD
         // checking if the user commit before exit the program
         // if forget to commit tell them to commit or not
         Utils.checkingCommit(input, transactionFile, dataSource);
@@ -194,5 +206,21 @@ public class Main {
         }while (!opt.equals("x"));
         System.out.println("Bye bye");
 
+=======
+        Singleton.getProductView().welcome();
+        ArrayList<Product> products;
+
+        // we are checking the committing here
+        Utils.checkingCommit(input,transactionFile, dataSource);
+        // reading data from file into list
+        products = Utils.readFileToList(dataSource," Reading data from data source into list!");
+        Utils.syncWithTransactionFile(products, transactionFile);
+
+        // read data from data source into transaction file
+        boolean running = true;
+        while (running) {
+            running = Singleton.getProductController().display(input, products, transactionFile, dataSource, dir);
+        }
+>>>>>>> 358575109c7aa64dfc83c74b187dc99c64e86bb6
     }
 }
