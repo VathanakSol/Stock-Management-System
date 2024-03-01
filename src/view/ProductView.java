@@ -1,5 +1,6 @@
 package view;
 
+<<<<<<< HEAD
 import java.util.Scanner;
 
 public class ProductView {
@@ -23,5 +24,9 @@ public class ProductView {
         System.out.println("-+".repeat(50));
 
         return choice;
+=======
+public class ProductView {
+    public void showMenu() {
+>>>>>>> aa0b1a4d6f2dce684f65effe5cc4d3e8861ce6cc
     }
 }

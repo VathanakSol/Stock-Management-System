@@ -4,7 +4,10 @@ import java.time.LocalDate;
 
 public class Product {
     private String codeOfProduct;
+<<<<<<< HEAD
     private int id;
+=======
+>>>>>>> aa0b1a4d6f2dce684f65effe5cc4d3e8861ce6cc
     private String name;
     private int qty;
     private float price;
@@ -37,6 +40,7 @@ public class Product {
         this.currentDate = currentDate;
     }
 
+<<<<<<< HEAD
     public int getId() {
         return id;
     }
@@ -45,6 +49,8 @@ public class Product {
         this.id = id;
     }
 
+=======
+>>>>>>> aa0b1a4d6f2dce684f65effe5cc4d3e8861ce6cc
     public String getName() {
         return name;
     }

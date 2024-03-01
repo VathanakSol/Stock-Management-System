@@ -1,7 +1,11 @@
 <component name="libraryTable">
   <library name="text-table-formatter-1.1.2">
     <CLASSES>
+<<<<<<< HEAD
       <root url="jar://$USER_HOME$/Desktop/text-table-formatter-1.1.2.jar!/" />
+=======
+      <root url="jar://$USER_HOME$/Downloads/text-table-formatter-1.1.2.jar!/" />
+>>>>>>> aa0b1a4d6f2dce684f65effe5cc4d3e8861ce6cc
     </CLASSES>
     <JAVADOC />
     <SOURCES />
