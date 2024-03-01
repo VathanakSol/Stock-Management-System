@@ -19,19 +19,19 @@ public class Main {
         // variable for storing location of dir back up
         String dir = "src/backup";
 
-        // checking if the user commit before exit the program
-        // if forget to commit tell them to commit or not
-        Utils.checkingCommit(input, transactionFile, dataSource);
+        Singleton.getProductView().welcome();
+        ArrayList<Product> products;
+
+        // we are checking the committing here
+        Utils.checkingCommit(input,transactionFile, dataSource);
+        // reading data from file into list
+        products = Utils.readFileToList(dataSource," Reading data from data source into list!");
+        Utils.syncWithTransactionFile(products, transactionFile);
 
         // read data from data source into transaction file
-        Utils.exchangeData(dataSource, transactionFile, "Retrieving data into Transaction File: ");
-
-        List<Product> productsList = new ArrayList<>();
-
         boolean running = true;
         while (running) {
-            running = Singleton.getProductController().display(input, productsList, transactionFile, dataSource, dir);
+            running = Singleton.getProductController().display(input, products, transactionFile, dataSource, dir);
         }
-        System.out.println("Hello from main");
     }
 }

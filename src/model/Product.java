@@ -1,21 +1,21 @@
 package model;
 
 public class Product {
-    private int id;
+    private String id;
     private String name;
     private int qty;
     private float price;
 
-    public int getId() {
+    public String getName() {
+        return name;
+    }
+
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
-    }
-
-    public String getName() {
-        return name;
     }
 
     public void setName(String name) {
@@ -36,5 +36,11 @@ public class Product {
 
     public void setPrice(float price) {
         this.price = price;
+    }
+
+    @Override
+    public String toString() {
+        return
+                id + "\t\t\t" + name + "\t\t\t" + qty + "\t\t\t" + price;
     }
 }
