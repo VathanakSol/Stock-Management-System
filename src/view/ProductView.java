@@ -105,6 +105,7 @@ public class ProductView {
         table.setColumnWidth(0, 122, 122);
         table.addCell("Invalid Input", cellStyle);
 
+        System.out.println();
         System.out.println(table.render());
     }
 
