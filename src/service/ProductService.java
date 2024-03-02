@@ -12,7 +12,7 @@ public interface ProductService {
     void delete(List<Product> products, Scanner input, String transaction);
     void search(Scanner input, List<Product> products);
     void edit(Scanner input, List<Product> products,String transactionFile);
-    void commit(String transactionFile, String dataSource, Scanner input);
+    void commit(String transactionFile, String dataSource);
     void backUp(String dir, String dataSourceFileName);
     void random(Scanner input, List<Product> products, String transaction);
     void clearData(String dataSource);

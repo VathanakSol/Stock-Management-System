@@ -1,7 +1,9 @@
 package service;
 
 import model.Product;
+import org.nocrala.tools.texttablefmt.Table;
 import utils.Singleton;
+import utils.TableUtils;
 import utils.Utils;
 
 import java.io.*;
@@ -10,41 +12,33 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class ProductServiceImp implements ProductService {
+    private int rowSize = 2; // default row size
     @Override
     public void display(List<Product> products, Scanner input) {
+        if (products.isEmpty()) {
+            System.out.println("No products to display.");
+            return;
+        }
+
         int totalPages = (int) Math.ceil((double) products.size() / this.rowSize);
         int currentPage = 1;
-
-        int startIndex = 0;
-        int endIndex = Math.min(this.rowSize, products.size());
+        int totalRecord = products.size();
 
         while (true) {
-            System.out.println("=========================|Display Product Here|==========================");
-            System.out.println("=========================================================================");
-            System.out.println("\tCODE\t\t\tNAME\t\t QUANTITY\t\t  PRICE");
-            System.out.println("=========================================================================");
-            for (int i = startIndex; i < endIndex; i++) {
-                System.out.println(products.get(i));
-            }
+            int startIndex = (currentPage - 1) * rowSize;
+            int endIndex = Math.min(startIndex + rowSize, products.size());
+            List<Product> pageProducts = products.subList(startIndex, endIndex);
 
-            // Prompt user for navigation input
-            // Display products for the current page
-            System.out.println("=========================================================================");
-            System.out.println("Page " + currentPage + "/" + totalPages + "\t\t\t\t\t\t\t\t\t\tTotal Records: " + products.size());
-            System.out.println("=========================================================================");
-            System.out.print("""
-                <P> previous \t\t\t\t\t\t\t\t\t<F> first page 
-                <N> next \t\t\t\t\t\t\t\t\t\t<L> last page
-                <B> Back to Menu
-                page number to go to: 
-                """);
+            // Render only the products for the current page
+            TableUtils.renderProductsToTable(pageProducts, rowSize, currentPage, totalPages, totalRecord); // Assuming this method can accept a list of products to display
+
+            TableUtils.renderPaginationOption(); // Render pagination options
+            System.out.print("Enter the option: ");
             String userInput = input.next();
-            System.out.println("=========================================================================");
+
             if (userInput.equalsIgnoreCase("p")) {
                 // Go to previous page
                 if (currentPage > 1) {
-                    startIndex -= rowSize;
-                    endIndex -= rowSize;
                     currentPage--;
                 } else {
                     System.out.println("You are already on the first page.");
@@ -52,21 +46,15 @@ public class ProductServiceImp implements ProductService {
             } else if (userInput.equalsIgnoreCase("n")) {
                 // Go to next page
                 if (currentPage < totalPages) {
-                    startIndex += rowSize;
-                    endIndex += rowSize;
                     currentPage++;
                 } else {
                     System.out.println("You are already on the last page.");
                 }
             } else if (userInput.equalsIgnoreCase("f")) {
                 // Go to first page
-                startIndex = 0;
-                endIndex = Math.min(rowSize, products.size());
                 currentPage = 1;
             } else if (userInput.equalsIgnoreCase("l")) {
                 // Go to last page
-                endIndex = products.size();
-                startIndex = (totalPages - 1) * rowSize;
                 currentPage = totalPages;
             } else if (userInput.equalsIgnoreCase("b")) {
                 // Go back to menu
@@ -76,8 +64,6 @@ public class ProductServiceImp implements ProductService {
                 try {
                     int pageNumber = Integer.parseInt(userInput);
                     if (pageNumber >= 1 && pageNumber <= totalPages) {
-                        startIndex = (pageNumber - 1) * rowSize;
-                        endIndex = Math.min(pageNumber * rowSize, products.size());
                         currentPage = pageNumber;
                     } else {
                         System.out.println("Invalid page number. Please enter a number between 1 and " + totalPages);
@@ -88,15 +74,12 @@ public class ProductServiceImp implements ProductService {
             }
         }
     }
-
-    int row = 2;
-    private int rowSize = 2; // default row size
     @Override
     // Method to set the row size
     public void setRow(Scanner input) {
         while (true) {
             try {
-                System.out.print("Enter the number of rows (0 for default of 2): ");
+                System.out.print("Enter the number of rows: ");
                 int inputRowSize = input.nextInt();
                 if (inputRowSize == 0) {
                     inputRowSize = this.rowSize; // use the default value
@@ -109,54 +92,40 @@ public class ProductServiceImp implements ProductService {
                 input.nextLine(); // clear the scanner buffer
             }
         }
+        System.out.println("Press any key");
+        input.nextLine();
     }
     @Override
     public void read(List<Product> products, Scanner input) {
         while (true) {
             try {
-                System.out.println("=========================|Display Product by Code Here|==========================");
-                System.out.print("""
-                    <B> Back to Menu
-                    Enter ID:
-                    """);
+                System.out.print("Enter ID: ");
                 String id = input.nextLine();
-
-                if (id.equalsIgnoreCase("b")) {
-                    // If user enters 'b', go back to the menu
-                    return;
-                }
 
                 boolean found = false;
                 for (Product product : products) {
                     if (id.equals(product.getId())) {
-                        System.out.println("--------------------------------------------------");
-                        System.out.println("PRODUCT CODE: " + id + " DETAIL                   ");
-                        System.out.println("--------------------------------------------------");
-                        System.out.println("CODE:\t\t\t\t\t" + product.getId());
-                        System.out.println("NAME:\t\t\t\t\t" + product.getName());
-                        System.out.println("QUANTITY:\t\t\t\t" + product.getQty());
-                        System.out.println("UNIT PRICE:\t\t\t\t" + product.getPrice() + "$");
+                        TableUtils.renderEachProduct(product, "Product Detail");
+                        System.out.println("press any key");
                         found = true;
                         break;
                     }
                 }
-
                 if (!found) {
                     System.out.println("Product with ID " + id + " not found.");
                 }
 
-                System.out.println("--------------------------------------------------");
-                // Exit the loop if input and processing are successful
                 break;
             } catch (Exception e) {
                 // Catch any exceptions (e.g., InputMismatchException) and print an error message
                 System.out.print("Invalid input! Please try again: ");
+                System.out.println("press any key");
                 input.nextLine(); // Clear the input buffer
             }
         }
     }
     @Override
-    public void write(Scanner input, List<Product> products, String transaction) {
+    public void write(Scanner input, List<Product> products, String filePath) {
         Product product = new Product();
 
         // Auto-assign ID based on the current size of the list
@@ -169,7 +138,7 @@ public class ProductServiceImp implements ProductService {
 
         int qty;
         while (true) {
-            System.out.println("Enter Quantity: ");
+            System.out.print("Enter Quantity: ");
             try {
                 qty = input.nextInt();
                 if (qty >= 0) {
@@ -186,7 +155,7 @@ public class ProductServiceImp implements ProductService {
 
         float price;
         while (true) {
-            System.out.println("Enter Price: ");
+            System.out.print("Enter Price: ");
             try {
                 price = input.nextFloat();
                 if (price >= 0) {
@@ -200,11 +169,18 @@ public class ProductServiceImp implements ProductService {
             }
         }
         product.setPrice(price);
+        TableUtils.renderEachProduct(product, "Add New Product");
 
-        products.add(product);
+        boolean answer = Utils.confirm("Create", input);
+        if (answer) {
+            products.add(product);
+        }
 
-        // Call method sync with transaction file
-        Utils.syncWithTransactionFile(products, transaction);
+        // after write product
+        // we need to write product in the list into transaction file
+        Utils.listToFile(products, filePath);
+        System.out.println("press any key");
+        input.nextLine();
     }
     @Override
     public void delete(List<Product> products, Scanner input, String transaction) {
@@ -216,14 +192,21 @@ public class ProductServiceImp implements ProductService {
             Product product = iterator.next();
             if (product.getId().equals(id)) {
                 iterator.remove(); // Remove the current product from the list
-                removed = true;
+                TableUtils.renderEachProduct(product, "Delete Product");
+                boolean answer = Utils.confirm("Delete", input);
+                if (answer) {
+                    removed = true;
+
+                }
                 System.out.println("Product with ID: " + id + " removed successfully!");
+                System.out.println("Press any key");
+                input.nextLine();
             }
         }
         if (!removed) {
             System.out.println("Product with ID: " + id + " not found.");
         }
-        Utils.syncWithTransactionFile(products, transaction);
+        Utils.listToFile(products, transaction);
     }
     @Override
     public void search(Scanner input, List<Product> products) {
@@ -234,9 +217,6 @@ public class ProductServiceImp implements ProductService {
         for (Product product : products) {
             if (product.getName().equalsIgnoreCase(name)) {
                 if (!found) {
-                    System.out.println("=======================================================================================");
-                    System.out.println("Products with name<" + product.getName() + "> Found:");
-                    System.out.println("=======================================================================================");
                     found = true;
                 }
                 System.out.println("ID: " + product.getId() + "\t\t\tName: " + product.getName() + "\t\t\tQuantity: " + product.getQty() + "\t\t\tPrice: " + product.getPrice() + "$");
@@ -246,6 +226,7 @@ public class ProductServiceImp implements ProductService {
         if (!found) {
             System.out.println("Product with Name: " + name + " not found.");
         }
+        System.out.print("Press any key");
     }
     @Override
     public void edit(Scanner input, List<Product> products, String transactionFile) {
@@ -286,52 +267,22 @@ public class ProductServiceImp implements ProductService {
                     }
                 }
                 product.setPrice(price);
+                TableUtils.renderEachProduct(product, "Update");
+                Utils.confirm("Update", input);
                 updated = true;
-
-                // Ask for confirmation
-                System.out.print("Are you sure you want to update this product? (Y/N): ");
-                String confirmation = input.nextLine();
-                switch (confirmation.toLowerCase()) {
-                    case "y", "Y" -> {
-                        Utils.syncWithTransactionFile(products, transactionFile);
-                        return; // Exit the method after updating
-                    }
-
-                    case "n", "N" -> {
-                        // Revert changes
-                        System.out.println("Update cancelled. Reverting changes...");
-                        Utils.readFileToList(transactionFile, "");
-                        return; // Exit the method without updating
-                    }
-                    default -> {
-                        System.out.println("Invalid input. Please enter 'Y' or 'N'.");
-                    }
-                }
             }
         }
         if (!updated) {
             System.out.println("Product with Code: " + id + " not found.");
         }
+        System.out.println("Press any key");
+        input.nextLine();
+
     }
     @Override
-    public void commit(String transactionFile, String dataSource, Scanner input)  {
-        File file = new File(transactionFile);
-        if (!file.exists() || file.length() == 0) {
-            System.out.println("No data to commit.");
-            return;
-        }
-
-        System.out.print("Do you want to commit the data? (Y/N): ");
-        String confirmation = input.nextLine();
-        if (confirmation.equalsIgnoreCase("y")) {
-            Utils.exchangeData(transactionFile, dataSource);
-            Utils.clearTransactionFile(transactionFile, "");
-            System.out.println("Commit Successful!");
-        } else if (confirmation.equalsIgnoreCase("n")) {
-            System.out.println("Commit aborted.");
-        } else {
-            System.out.println("Invalid input. Please enter 'Y' or 'N'.");
-        }
+    public void commit(String originalFile, String destinationFile) {
+        // call exchange method
+        Utils.exchangeData(originalFile, destinationFile);
     }
 
     @Override
@@ -364,11 +315,15 @@ public class ProductServiceImp implements ProductService {
         }
     }
 
+    // when random method called
+    // I randomly data into the file
+    // so this method is written data into a file
     @Override
     public void random(Scanner input, List<Product> products, String transaction) {
         boolean validInput = false;
         int row = 0;
 
+        // validate row input by user
         while (!validInput) {
             try {
                 System.out.print("Enter Row: ");
@@ -383,30 +338,74 @@ public class ProductServiceImp implements ProductService {
                 input.nextLine(); // Clear the input buffer
             }
         }
-
+        // determine the starting time
         long start = System.currentTimeMillis();
         Random random = new Random();
-        DecimalFormat df = new DecimalFormat("#.##"); // Format for two digits after the decimal point
-        int startingIndex = products.size(); // Get the current size of the list
-        for (int i = 0; i < row; i++) {
-            Product product = new Product(); // Create a new product for each iteration
-            String randomName = generateRandomName();
-            int qty = random.nextInt(100);
-            float price = Float.parseFloat(df.format(random.nextFloat() * 100.0f)); // Format the price
-            // Generate product ID based on the current size of the list
-            product.setId(String.format("CSTAD-%03d", startingIndex + i));
-            product.setName(randomName);
-            product.setQty(qty);
-            product.setPrice(price);
-            products.add(product); // Add the product to the provided list
+        // Format for two digits after the decimal point
+        DecimalFormat df = new DecimalFormat("#.##");
+        // Get the current size of the list
+        int startingIndex = products.size();
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(transaction, true))) {
+            for (int i = 0; i < row; i++) {
+                // Create a new product for each iteration
+                Product product = new Product();
+                String randomName = generateRandomName();
+                int qty = random.nextInt(100);
+                float price = Float.parseFloat(df.format(random.nextFloat() * 10.0f)); // Format the price
+                // Generate product ID based on the current size of the list
+                product.setId(String.format("CSTAD-%03d", startingIndex + i));
+                product.setName(randomName);
+                product.setQty(qty);
+                product.setPrice(price);
+                // Write product data to the file separated by commas
+                writer.write(product.getId() + "," + product.getName() + "," + product.getQty() + "," + product.getPrice());
+                writer.newLine();
+            }
+            writer.flush(); // Flush the buffer to ensure all data is written to the file
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        // determine the ending time
+        long end = System.currentTimeMillis();
+        // calculate the duration from starting to ending
+        long duration = Utils.findDuration(start, end);
+        System.out.println("Written successfully(>.<)");
+
+        // after write data into a file I need to read from file (transaction file) into a list
+        // call method that do the mention task
+        readFileToList(products, transaction);
+
+        System.out.println("Press any key");
+        input.nextLine();
+        input.nextLine();
+    }
+    // this method is reading data from file we just random into a list
+    public void readFileToList(List<Product> products, String transaction) {
+        long start = System.currentTimeMillis();
+        try (BufferedReader reader = new BufferedReader(new FileReader(transaction))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                // Split the line by comma and create a Product object
+                String[] parts = line.split(",");
+                if (parts.length == 4) { // Ensure that the line is correctly formatted
+                    Product product = new Product();
+                    product.setId(parts[0]);
+                    product.setName(parts[1]);
+                    product.setQty(Integer.parseInt(parts[2]));
+                    product.setPrice(Float.parseFloat(parts[3]));
+                    products.add(product);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         long end = System.currentTimeMillis();
         long duration = Utils.findDuration(start, end);
-        Utils.displayAnimation(duration);
-        System.out.println(" for " + row + " records");
-        // random into file
-        Utils.syncWithTransactionFile(products, transaction);
+        System.out.println("Read successfully(0~0)");
     }
+
+    // method for random generate name
     private String generateRandomName() {
         String[] names = new String[]{"Sting", "Lay's", "Pepsi", "Coca", "Yogurt", "Candy", "Hanami", "Susi", "Milk", "Beer"};
         Random random = new Random();
@@ -454,7 +453,6 @@ public class ProductServiceImp implements ProductService {
                     System.out.println("B. Back to Menu");
                     System.out.print("Enter option: ");
                     String userInput = input.nextLine();
-                    System.out.println("=========================================================================");
 
                     if (userInput.equalsIgnoreCase("B")) {
                         return; // Exit the method if user wants to go back to the menu
@@ -476,9 +474,9 @@ public class ProductServiceImp implements ProductService {
                         if (selectedFile != null) {
                             String selectedFilePath = selectedFile.getPath();
                             // restore data from selectedFilePath into transaction file
-                            System.out.println("size of data from file " + Utils.readFileToList(transaction, "").size());
+                            System.out.println("size of data from file " + Utils.readFileToList(transaction).size());
                             Utils.exchangeData(selectedFilePath, transaction);
-                            Utils.readFileToList(selectedFilePath, "");
+                            Utils.readFileToList(selectedFilePath);
                             System.out.println("You are restoring file " + selectedFile.getName() + "...");
                             return ;
                             // Return the path of the selected file

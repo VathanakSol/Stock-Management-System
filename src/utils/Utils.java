@@ -13,24 +13,18 @@ import java.util.regex.Pattern;
 public class Utils {
 
     // write data in transaction file into data source file and clear the list
-    public static void exchangeData(String transactionFile, String dataSource) {
-        ExecutorService executor = Executors.newFixedThreadPool(10);
-        // Create a thread pool with 10 threads
-
-        executor.execute(() -> { // Execute reading and writing tasks in a separate thread
-            try (BufferedReader reader = new BufferedReader(new FileReader(transactionFile));
-                 BufferedWriter writer = new BufferedWriter(new FileWriter(dataSource))) {
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    writer.write(line);
-                    writer.newLine();
-                }
-                writer.flush(); // Flush the writer to ensure all data is written
-            } catch (IOException e) {
-                System.err.println("Error committing data: " + e.getMessage());
+    public static void exchangeData(String originalFile, String destinationFile) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(originalFile));
+             BufferedWriter writer = new BufferedWriter(new FileWriter(destinationFile))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                writer.write(line);
+                writer.newLine();
             }
-        });
-        executor.shutdown();
+            writer.flush(); // Flush the writer to ensure all data is written
+        } catch (IOException e) {
+            System.err.println("Error committing data: " + e.getMessage());
+        }
     }
     // checking first is it user already commit before close the program
     // if no commit before close program ask them
@@ -71,43 +65,38 @@ public class Utils {
             System.err.println("Error clearing transaction file: " + e.getMessage());
         }
     }
-    // method for validation user input
-    // method read data from file into list
-    public static ArrayList<Product> readFileToList(String transactionFile, String msg) {
+    /***
+     * method for validation user input
+     * method read data from file into list
+     */
+    public static ArrayList<Product> readFileToList(String dataSource) {
         ArrayList<Product> products = new ArrayList<>();
-        // set the time of starting
         long start = System.currentTimeMillis();
-        try (BufferedReader br = new BufferedReader(new FileReader(transactionFile))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(dataSource))) {
             String line;
-            while ((line = br.readLine()) != null) {
+            while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(",");
-
-                String id = parts[0].trim();
-                String name = parts[1].trim();
-                int qty = Integer.parseInt(parts[2].trim());
-                float price = Float.parseFloat(parts[3].trim());
-
-                Product product = new Product();
-                product.setName(name);
-                product.setId(id);
-                product.setPrice(price);
-                product.setQty(qty);
-                products.add(product);
+                if (parts.length == 4) { // Ensure that the line is correctly formatted
+                    Product product = new Product();
+                    product.setId(parts[0]);
+                    product.setName(parts[1]);
+                    product.setQty(Integer.parseInt(parts[2]));
+                    product.setPrice(Float.parseFloat(parts[3]));
+                    products.add(product);
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-        syncWithTransactionFile(products,transactionFile);
         long end = System.currentTimeMillis();
-        Utils.findDuration(start, end);
-        System.out.println(msg);
-        System.out.println();
+        long duration = end - start;
+        System.out.println("Reading duration: " + duration + " ms");
         return products;
     }
 
     // this method is make sure the list data file transaction has the same data
     // it synchronizes
-    public static void syncWithTransactionFile(List<Product> products, String transaction) {
+    public static void listToFile(List<Product> products, String transaction) {
         long start = System.currentTimeMillis();
         // Write data to transaction file using BufferedWriter for efficient buffering
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(transaction))) {
@@ -130,11 +119,11 @@ public class Utils {
         return product.getId() + "," + product.getName() + "," + product.getQty() + "," + product.getPrice();
     }
 
-    // method for find duration
-    // need parameters start and end time
+    /*** method for find duration
+     need parameters start and end time*/
     public static long findDuration(long start, long end) {
         long duration = end - start;
-        System.out.print("Take time " + duration + " millisecond(>_<) ");
+        System.out.print("Take time " + duration + " ms to ");
         return duration;
     }
 
@@ -161,22 +150,18 @@ public class Utils {
         }
     }
 
-    public static int countLines(String filePath) throws IOException {
-        int count = 0;
-        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
-            while (reader.readLine() != null) {
-                count++;
-            }
-        }
-        return count;
-    }
+    public static boolean confirm(String msg, Scanner input) {
+        while (true) {
+            System.out.println("Are you sure you want to " + msg + "?(Y/N)");
 
-    public static void clearFile(String filePath) {
-        try (FileWriter fw = new FileWriter(filePath, false)) {
-            // FileWriter is opened in overwrite mode and closed immediately,
-            // which clears the file without writing anything.
-        } catch (IOException e) {
-            System.err.println("An error occurred while clearing the file: " + e.getMessage());
+            String answer = input.nextLine();
+            if (answer.equalsIgnoreCase("y")) {
+                return true;
+            } else if (answer.equalsIgnoreCase("n")) {
+                return false;
+            } else {
+                System.out.println("Invalid input! Please enter 'y' for yes or 'n' for no.");
+            }
         }
     }
 }
