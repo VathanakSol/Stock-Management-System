@@ -123,34 +123,31 @@ public class Utils {
      need parameters start and end time*/
     public static long findDuration(long start, long end) {
         long duration = end - start;
-        System.out.print("Take time " + duration + " ms to ");
         return duration;
     }
 
     public static void displayAnimation(long duration) {
         // Set the sequences for the animation
-        String[] animationFrames = new String[] {">0<", "-0-", ">_<", "-_-", ">,<", "-,-", "-X-"};
+        String[] animationFrames = new String[] {"(👉ﾟヮﾟ)👉", "👈(⌒▽⌒)👉", "👈(ﾟヮﾟ👈)"};
 
         // Get the current time
         long startTime = System.currentTimeMillis();
 
         // Start the animation loop
         while (System.currentTimeMillis() - startTime < duration) {
-            for (String frame : animationFrames) {
+            for (int i = 0; i < animationFrames.length; i++) {
                 // Print the animation frame
-                System.out.print("\r" + frame);
+                System.out.print("\r" + animationFrames[i % animationFrames.length]);
 
                 // Sleep for a short duration to control the animation speed
                 try {
-                    Thread.sleep(0); // Adjust the sleep duration for the desired speed
+                    Thread.sleep(300); // Adjust the sleep duration for the desired speed
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
         }
-    }
-
-    public static boolean confirm(String msg, Scanner input) {
+    }    public static boolean confirm(String msg, Scanner input) {
         while (true) {
             System.out.println("Are you sure you want to " + msg + "?(Y/N)");
 

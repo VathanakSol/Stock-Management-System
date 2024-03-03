@@ -283,6 +283,7 @@ public class ProductServiceImp implements ProductService {
     public void commit(String originalFile, String destinationFile) {
         // call exchange method
         Utils.exchangeData(originalFile, destinationFile);
+        Utils.clearTransactionFile(originalFile, "");
     }
 
     @Override
@@ -363,6 +364,7 @@ public class ProductServiceImp implements ProductService {
                 writer.newLine();
             }
             writer.flush(); // Flush the buffer to ensure all data is written to the file
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -370,12 +372,19 @@ public class ProductServiceImp implements ProductService {
         long end = System.currentTimeMillis();
         // calculate the duration from starting to ending
         long duration = Utils.findDuration(start, end);
-        System.out.println("Written successfully(>.<)");
+        System.out.println("Need " + duration + " milliseconds to write into file ⚆_⚆");
+        Utils.displayAnimation(duration);
+        System.out.println();
 
         // after write data into a file I need to read from file (transaction file) into a list
         // call method that do the mention task
+        long start1 = System.currentTimeMillis();
         readFileToList(products, transaction);
-
+        long end1 = System.currentTimeMillis();
+        long duration1 = Utils.findDuration(start1, end1);
+        System.out.println("Need " + duration1 + " milliseconds to read from file into list ◉_◉");
+        Utils.displayAnimation(duration);
+        System.out.println();
         System.out.println("Press any key");
         input.nextLine();
         input.nextLine();
@@ -401,8 +410,6 @@ public class ProductServiceImp implements ProductService {
             e.printStackTrace();
         }
         long end = System.currentTimeMillis();
-        long duration = Utils.findDuration(start, end);
-        System.out.println("Read successfully(0~0)");
     }
 
     // method for random generate name
