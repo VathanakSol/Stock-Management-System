@@ -275,6 +275,8 @@ public class ProductServiceImp implements ProductService {
         if (!updated) {
             System.out.println("Product with Code: " + id + " not found.");
         }
+        // we need to write product in the list into transaction file
+        Utils.listToFile(products, transactionFile);
         System.out.println("Press any key");
         input.nextLine();
 
